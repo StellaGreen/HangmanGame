@@ -1,77 +1,94 @@
-const fs = require('fs')
-const readlineSync = require("readline");
+const prompt = require('readline-sync') // PACKAGES AND MODULES
+const randomWord = require('./word-bank.json')
 const chalk = require('chalk')
-let notFound = true
-let counter = 10;
-let guessed = [];
-
-const words = require("./word-bank.json");
-let wordBank = [];
-
-const initWordBank = () => {
-    for (let i = 0; i < words.length; i++) {
-      if (words[i].label.length > 4) {
-        wordBank.push(words[i].label)
+// DEFINED OF LIFE AND POINTS
+let wins = 0;
+let losses = 0;
+// FOR CHOOSE A WORD IMPORT AND PLACE THE WORD TO FOUND IN SECRET
+const resetGame = () => {
+  let hiddenWordArray = []
+  let numberOfGuesses = 6
+  let alreadyGuessedLetters = []
+  const hangman = () => {
+    const word = randomWord[Math.floor(Math.random() * randomWord.length)]
+    const letters = word.split('')
+    let numberOfRemainingLetters = word.length
+    const findHiddenWordArray = () => {
+      letters.forEach((_, index) => {
+        hiddenWordArray[index] = '_'
+      })}
+    findHiddenWordArray()
+    console.log(
+      chalk.blue.inverse( // BEGENING OF THE GAME
+        '\nWelcome in this game for save a man with you brain !\n'
+      ))
+    while (numberOfRemainingLetters > 0 && numberOfGuesses > 0) { // BOUCLE FOR THE GAME
+      console.log(hiddenWordArray.join(' '))
+      let guess = prompt
+        .question(chalk.cyan('\nGive me a letter, please  ')) // QUESTION OF THE GAME
+        .toLowerCase()
+      const evaluateGuess = () => { // EVALUTATION AND CHANGEMENT OF LETTER FOUND
+        if (guess === '') {
+          console.log('\nHey, just one letter !')
+        } else if (/[^a-zA-Z]/.test(guess[0])) {
+          console.log('\nHey, just a letter !')
+        } else if (/[a-zA-Z]/.test(guess[0])) {
+          letters.forEach((letter, index) => {
+            if (guess[0] === letter) {
+              if (hiddenWordArray[index] === '_') {
+                hiddenWordArray[index] = guess[0]
+                numberOfRemainingLetters--
+              }}})
+          if ( // IF THE PLAYER HAVE FALSE
+            !alreadyGuessedLetters.includes(guess[0]) &&
+            !letters.includes(guess[0])
+          ) {numberOfGuesses--}
+          if (!alreadyGuessedLetters.includes(guess[0])) {
+            alreadyGuessedLetters.push(guess[0]);
+          }}}
+      evaluateGuess()
+      const drawHangman = () => {
+        if (numberOfGuesses === 6) { // FIRST DECOMPT, LIFE IS FULL
+          console.log(
+            `\nFine you have ${numberOfGuesses} lifes`
+          )
+        } else if (numberOfGuesses >= 5) { // THE PLAYER LOOSE A LETTER
+          console.log(`\n O \n\n\n`);
+          console.log(
+            `Uch, ho nO ... ${numberOfGuesses} lifes...`
+          )
+        } else if (numberOfGuesses === 0) { // THE PLAYER IS DEAD
+          console.log(`\n O \n/|\\\n/ \\\n`);
+          console.log(`Verry bad... ${numberOfGuesses} lifes, a man is dead because you don't have a brain...`)
+        }
+        console.log(`you found ${alreadyGuessedLetters} letter, that's greate.\n`)
       }
+      drawHangman() // CALL THE FUNCTION TO DRAW THE HANGMAN IF PLAYER DIE
     }
-}
-initWordBank();
-const getSecretWord = (aleat) => {
-    const n = Math.floor(Math.random() * aleat.length)
-    let secretWord = aleat[n]
-    secretWord = secretWord.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    secretWord = secretWord.toUpperCase()
-    return secretWord
-}
-
-const secretWord = getSecretWord(wordBank); //-----------------------MOT SECRET A TROUVER
-
-const secret = (str) => {
-    let secretToGuess = "";
-    for (let i = 0; i < str.length; i++) {
-      if (guessed.indexOf(str[i]) !== -1) {
-        secretToGuess += str[i];
+    const showResults = () => {
+      if (numberOfRemainingLetters > 0) { // THE PLAYER IS DEAD
+        console.log(hiddenWordArray.join(' '))
+        console.log(
+          chalk.red(
+            `\n\nHo dude...\nThe word is ${word}, why not to retry ?\n`
+          )
+        )
+        losses++ // DECOMPT OF DEAD
       } else {
-        secretToGuess += "_ ";
+        console.log(hiddenWordArray.join(' ')); // THE PLAYER AS WIN
+        console.log(
+          chalk.green(`\n\nWooow\nThe answer is ${word}.\n`)
+        )
+        wins++ // DECOMPT OF WIN
       }
+      console.log(
+        `\nGood Game ${wins} win, ${losses} points loose !\n` // SHOW RESULT OF POINTS
+      )
     }
-    return secretToGuess; // -----------------------------------------MOT A TROUVER CACHÉ _ _ _ _ _ _
-  };
-
-const drawing = num => { // ---------------------------------------------DESSIN SI ERREUR
-    let draw = "   |---|\n";
-    if (num < 9 ? (draw += "   o   |\n") : (draw += "       |\n"));
-    if (num < 6 ? (draw += "  /|\\  |\n") : (draw += "       |\n"));
-    if (num < 4 ? (draw += "   -   |\n") : (draw += "       |\n"));
-    draw += `       |\n       |\n   ------\n`;
-    return console.log(draw);
-  };
-while(notFound){
-    const toTry = secret(secretWord)
-    console.log(`\n You have just ${counter} life${counter > 0 ? 's' : ''}.`)
-    console.log(`This is the word to found :\n\t${toTry}`)
-    const input = readlineSync.question(`What's you'r letter ?`)
-    if(input > 2){
-        console.log(`just one letter please`)
-    }
-    if(toTry === secret(secretWord)){
-        counter--
-    } if(counter === 0){
-        console.log("FAIL");
-        console.log(`The secret word was: ${secretWord}`);
-        console.log(`
-        |---|
-        o   |
-       /|\\  |
-        -   |
-       / \\  |
-            |
-        ------`);
-        return readline.close()
-    } if (toTry === 0){
-        console.log(`Congratulation the hangman is save !`)
-        readline.close()
-    } else {
-        console.log(`You got it ! the secret word is : ${secret(secretWord)}`)
-    }
+    showResults()
+  }
+  hangman()
+}
+while (true) {
+  resetGame();
 }
