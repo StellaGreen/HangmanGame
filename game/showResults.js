@@ -13,7 +13,7 @@ exports.showResults = (rest, hidden, wo) => {
     } else {
       console.log(hidden.join(' ')); // THE PLAYER AS WIN
       console.log(
-        chalk.green.bgBlack(`\n\t\tWooow\n\tThe answer is ${wo}.\n`)
+        chalk.green.bgBlack(`\nWIN\t\t\tWIN\t\t\tWIN\t\t\tWIN\t\t\tWIN\n\tWIN\t\t\tWIN\t\t\tWIN\t\t\tWIN\t\t\tWIN\n\n\t\t\t\t\tWooow\n\n\t\t\t\tThe answer is ${wo}.`)
       )
       wins++ // DECOMPT OF WIN
     }

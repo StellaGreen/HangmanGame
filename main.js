@@ -3,9 +3,7 @@ const { hangman } = require('./game/gameStructure')
 
 //                            This is the main of my game
 const resetGame = () => {
-  let lifes = 7  
-  const numberOfGuesses = lifes
-  hangman(numberOfGuesses)
+  hangman()
 }
 while (true) {//               We love play in unlimited !
     resetGame();

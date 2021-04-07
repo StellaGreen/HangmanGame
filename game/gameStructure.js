@@ -6,8 +6,9 @@ const { showResults } = require('./showResults')
 
   let hiddenOfWordArray = []
   let playerGuessedLetters = []
+  let numberOfGuesses = 7
 
-exports.hangman = (numberOfGuesses) => {
+exports.hangman = () => {
     const word = randomWord[Math.floor(Math.random() * randomWord.length)] // CHOOSE A RANDOM WORD
     const letters = word.split('')
     let numberOfRemainingLetters = word.length
