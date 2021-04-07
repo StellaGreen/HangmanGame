@@ -1,94 +1,93 @@
 const prompt = require('readline-sync') // PACKAGES AND MODULES
-const randomWord = require('./word-bank.json')
+const randomWord = require('./wordBank.json')
 const chalk = require('chalk')
+const { drawHangman } = require('./drawHangman')
+
 // DEFINED OF LIFE AND POINTS
 let wins = 0;
-let losses = 0;
+let looses = 0;
 // FOR CHOOSE A WORD IMPORT AND PLACE THE WORD TO FOUND IN SECRET
 const resetGame = () => {
-  let hiddenWordArray = []
-  let numberOfGuesses = 6
-  let alreadyGuessedLetters = []
+  let hiddenOfWordArray = []
+  let numberOfGuesses = 7
+  let playerGuessedLetters = []
   const hangman = () => {
     const word = randomWord[Math.floor(Math.random() * randomWord.length)]
     const letters = word.split('')
     let numberOfRemainingLetters = word.length
     const findHiddenWordArray = () => {
       letters.forEach((_, index) => {
-        hiddenWordArray[index] = '_'
+        hiddenOfWordArray[index] = '_'
       })}
     findHiddenWordArray()
     console.log(
-      chalk.blue.inverse( // BEGENING OF THE GAME
-        '\nWelcome in this game for save a man with you brain !\n'
+      chalk.black.bgRedBright( // BEGENING OF THE GAME
+        '\n\t\tWelcome in this game for save a man with you brain !  '
       ))
+    console.log(
+      chalk.yellow.bgBlack.inverse( // BEGENING OF THE GAME
+        '\n Please, make the terminal control large to be able to play in the best conditions ! '
+      ))
+      console.log(
+        chalk.white.bgBlackBright( // BEGENING OF THE GAME
+          `\n(  Word to find  )\n    |   |   |     \n    V   V   V     \n`
+        ))
     while (numberOfRemainingLetters > 0 && numberOfGuesses > 0) { // BOUCLE FOR THE GAME
-      console.log(hiddenWordArray.join(' '))
+      console.log(hiddenOfWordArray.join(' '))
       let guess = prompt
-        .question(chalk.cyan('\nGive me a letter, please  ')) // QUESTION OF THE GAME
+        .question(chalk.cyan.bgBlack('\n  Give me a letter, please  \t')) // QUESTION OF THE GAME
         .toLowerCase()
       const evaluateGuess = () => { // EVALUTATION AND CHANGEMENT OF LETTER FOUND
         if (guess === '') {
           console.log('\nHey, just one letter !')
         } else if (/[^a-zA-Z]/.test(guess[0])) {
           console.log('\nHey, just a letter !')
+          return process.exit(1)
         } else if (/[a-zA-Z]/.test(guess[0])) {
           letters.forEach((letter, index) => {
             if (guess[0] === letter) {
-              if (hiddenWordArray[index] === '_') {
-                hiddenWordArray[index] = guess[0]
+              if (hiddenOfWordArray[index] === '_') {
+                hiddenOfWordArray[index] = guess[0]
                 numberOfRemainingLetters--
               }}})
           if ( // IF THE PLAYER HAVE FALSE
-            !alreadyGuessedLetters.includes(guess[0]) &&
+            !playerGuessedLetters.includes(guess[0]) &&
             !letters.includes(guess[0])
-          ) {numberOfGuesses--}
-          if (!alreadyGuessedLetters.includes(guess[0])) {
-            alreadyGuessedLetters.push(guess[0]);
-          }}}
+          ) {
+            numberOfGuesses--
+            (console.log(`${numberOfGuesses > 0 ? `\nUch you have just ${numberOfGuesses === 1 ? `${numberOfGuesses} life` : `${numberOfGuesses} lifes`} for win ...` : ``}\n`))
+          }
+          if (!playerGuessedLetters.includes(guess[0])) {
+            playerGuessedLetters.push(guess[0]);
+          }(console.log(chalk.cyan(`\nYou have tap the letter : ${playerGuessedLetters}\n`)))
+        }}
       evaluateGuess()
-      const drawHangman = () => {
-        if (numberOfGuesses === 6) { // FIRST DECOMPT, LIFE IS FULL
-          console.log(
-            `\nFine you have ${numberOfGuesses} lifes`
-          )
-        } else if (numberOfGuesses >= 5) { // THE PLAYER LOOSE A LETTER
-          console.log(`\n O \n\n\n`);
-          console.log(
-            `Uch, ho nO ... ${numberOfGuesses} lifes...`
-          )
-        } else if (numberOfGuesses === 0) { // THE PLAYER IS DEAD
-          console.log(`\n O \n/|\\\n/ \\\n`);
-          console.log(`Verry bad... ${numberOfGuesses} lifes, a man is dead because you don't have a brain...`)
-        }
-        console.log(`you found ${alreadyGuessedLetters} letter, that's greate.\n`)
-      }
-      drawHangman() // CALL THE FUNCTION TO DRAW THE HANGMAN IF PLAYER DIE
+      let nb = numberOfGuesses
+      drawHangman(nb)// CALL THE FUNCTION TO DRAW THE HANGMAN 
     }
     const showResults = () => {
       if (numberOfRemainingLetters > 0) { // THE PLAYER IS DEAD
-        console.log(hiddenWordArray.join(' '))
+        console.log(hiddenOfWordArray.join(' '))
         console.log(
-          chalk.red(
-            `\n\nHo dude...\nThe word is ${word}, why not to retry ?\n`
-          )
+          chalk.red.bgBlack(`\n\tHo dude... You are finally a murder\n\tThe word is ${word}\n`)
         )
-        losses++ // DECOMPT OF DEAD
+        looses++ // DECOMPT OF DEAD
       } else {
-        console.log(hiddenWordArray.join(' ')); // THE PLAYER AS WIN
+        console.log(hiddenOfWordArray.join(' ')); // THE PLAYER AS WIN
         console.log(
-          chalk.green(`\n\nWooow\nThe answer is ${word}.\n`)
+          chalk.green.bgBlack(`\n\t\tWooow\n\tThe answer is ${word}.\n`)
         )
         wins++ // DECOMPT OF WIN
       }
-      console.log(
-        `\nGood Game ${wins} win, ${losses} points loose !\n` // SHOW RESULT OF POINTS
-      )
+      console.log(chalk.magenta(
+        `\n\t\t\t\tGame win ${wins}, ${looses} points loose !\n` // SHOW RESULT OF POINTS
+      ))
     }
+    
     showResults()
   }
   hangman()
 }
 while (true) {
-  resetGame();
+    resetGame();
 }
