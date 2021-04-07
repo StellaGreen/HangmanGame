@@ -58,11 +58,11 @@ exports.drawHangman = (nb) => {
     } else if (nb === 0) { // THE PLAYER LOOSE A LETTER
       console.log(chalk.red.bgBlack(`
       +---+
-      |   |
+      |   |\t\tFAIL\t\tFAIL\t\tFAIL
       O   |
-     /|\\  |
+     /|\\  |\tFAIL\t\tFAIL\t\tFAIL
      / \\  |
-          |
-    =========`))
+          |\t\tFAIL\t\tFAIL\t\tFAIL
+    =========\n`))
     }
 }
