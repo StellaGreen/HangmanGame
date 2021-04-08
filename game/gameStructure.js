@@ -8,7 +8,8 @@ const { showResults } = require('./showResults')
   let playerGuessedLetters = []
   let numberOfGuesses = 7
 
-exports.hangman = () => {
+
+exports.hangman = (chance) => {
     const word = randomWord[Math.floor(Math.random() * randomWord.length)] // CHOOSE A RANDOM WORD
     const letters = word.split('')
     let numberOfRemainingLetters = word.length
@@ -29,7 +30,7 @@ exports.hangman = () => {
         chalk.white.bgBlackBright(
           `\n(  Word to find  )\n    |   |   |     \n    V   V   V     \n`
         ))
-    while (numberOfRemainingLetters > 0 && numberOfGuesses > 0) { // WHILE THE WORD IS FOUND OR NOT
+    while (numberOfRemainingLetters > 0 && numberOfGuesses > 0) { // WHILE THE WORD IS NOT FOUND
       console.log(hiddenOfWordArray.join(' '))
       let guess = prompt
         .question(chalk.cyan.bgBlack('\n  Give me a letter, please  \t')) // QUESTION OF THE GAME
@@ -41,6 +42,7 @@ exports.hangman = () => {
           console.log('\nHey, just a letter !')
           return process.exit(1)
         } else if (/[a-zA-Z]/.test(guess[0])) {
+
           letters.forEach((letter, index) => {
             if (guess[0] === letter) {
               if (hiddenOfWordArray[index] === '_') {
@@ -66,4 +68,5 @@ exports.hangman = () => {
     const hidden = hiddenOfWordArray
     const wo = word
     showResults(rest, hidden, wo)
+    chance--
   }
