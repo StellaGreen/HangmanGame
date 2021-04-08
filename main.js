@@ -2,10 +2,10 @@
 const { hangman } = require('./game/gameStructure')
 
 //                            This is the main of my game
-const resetGame = () => {
+const newGame = () => {
   hangman()
 }
 while (true) {//               We love play in unlimited !
-    resetGame();
+    newGame();
 }
 //                                     Good Game
